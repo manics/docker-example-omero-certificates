@@ -21,6 +21,12 @@ services:
       CONFIG_omero_db_pass: omero
       CONFIG_omero_db_name: omero
       ROOTPASS: omero
+
+      # Use HIGH:ADH to support both certificates and anonymous ciphers
+      CONFIG_omero_glacier2_IceSSL_Ciphers: HIGH
+      CONFIG_omero_glacier2_IceSSL_CertFile: /opt/omero/server/certs/server-combined.p12
+      CONFIG_omero_glacier2_IceSSL_Password: secret
+
     networks:
       - omero
     ports:
@@ -28,6 +34,7 @@ services:
       - "4064:4064"
     volumes:
       - "omero:/OMERO"
+      - "./server/90-generate-certs.sh:/startup/90-generate-certs.sh:ro${VOLOPTS-}"
 
   omeroweb:
     image: "openmicroscopy/omero-web-standalone:5.5"

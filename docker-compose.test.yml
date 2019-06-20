@@ -1,0 +1,14 @@
+version: "3"
+
+services:
+
+  test:
+    build: ./test
+    command:
+      - --omero.host=omeroserver
+      - --omero.user=root
+      - --omero.pass=omero
+      - --IceSSL.Ciphers=(DH_anon.*AES)
+      - --IceSSL.Trace.Security=1
+    networks:
+      - omero

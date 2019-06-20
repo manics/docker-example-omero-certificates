@@ -1,14 +1,11 @@
-# OMERO.server and OMERO.web (docker-compose)
+# OMERO.server self-signed certificates (docker-compose)
 
-[![Build Status](https://travis-ci.com/ome/docker-example-omero.svg?branch=master)](https://travis-ci.com/ome/docker-example-omero)
+[![Build Status](https://travis-ci.com/ome/docker-example-omero-certificates.svg?branch=master)](https://travis-ci.com/ome/docker-example-omero-certificates)
 
-This is an example of running OMERO.server and OMERO.web in Docker.
+This is an example of running OMERO.server with self-signed certificates instead of using the default anonymous ciphers.
+Certificates will be regenerated when OMERO.server starts.
 
-OMERO.server is listening on the standard OMERO ports `4063` and `4064`.
-OMERO.web is listening on port `4080` (http://localhost:4080/).
-
-Log in as user `root` password `omero`.
-The initial password can be changed in [`docker-compose.yml`](docker-compose.yml).
+You can enable certificates only, or enable certificates in addition to the default anonymous DH ciphers.
 
 
 ## Run
@@ -16,6 +13,23 @@ The initial password can be changed in [`docker-compose.yml`](docker-compose.yml
     docker-compose up -d
     docker-compose logs -f
 
-For more configuration options see:
-- https://github.com/ome/omero-server-docker/blob/master/README.md
-- https://github.com/ome/omero-web-docker/blob/master/README.md
+
+## Basic tests
+
+Fedora 30 is known to have a strict Java Cipher configuration that prevents OMERO Java clients connecting to an OMERO.server with the default configuration.
+The test runs the client with `--IceSSL.Ciphers=(DH_anon.*AES)` (this should be the default in a future release https://github.com/ome/omero-blitz/pull/59) which allows the client to connect.
+
+    docker-compose -f docker-compose.test.yml -f docker-compose.yml build
+    docker-compose -f docker-compose.test.yml -f docker-compose.yml run test
+
+
+## SELinux
+
+If SELinux is enabled you may need to change the context on host directories, for example by creating a `.env` file containing:
+
+    VOLOPTS=,z
+
+
+## Further information
+
+- https://docs.openmicroscopy.org/omero/5.5.0/sysadmins/client-server-ssl.html
